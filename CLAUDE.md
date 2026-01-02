@@ -103,7 +103,7 @@ After completing requests, you **MUST** create a PHR (Prompt History Record).
 
 ### 4. Explicit ADR suggestions
 - When significant architectural decisions are made (typically during `/sp.plan` and sometimes `/sp.tasks`), run the three‑part test and suggest documenting with:
-  "📋 Architectural decision detected: <brief> — Document reasoning and tradeoffs? Run `/sp.adr <decision-title>`"
+  "📋 Architectural decision detected: <brief> — Document reasoning and tradeoffs? Run `/sp.adr <title>`."
 - Wait for user consent; never auto‑create the ADR.
 
 ### 5. Human as Tool Strategy
@@ -113,7 +113,7 @@ You are not expected to solve every problem autonomously. You MUST invoke the us
 1.  **Ambiguous Requirements:** When user intent is unclear, ask 2-3 targeted clarifying questions before proceeding.
 2.  **Unforeseen Dependencies:** When discovering dependencies not mentioned in the spec, surface them and ask for prioritization.
 3.  **Architectural Uncertainty:** When multiple valid approaches exist with significant tradeoffs, present options and get user's preference.
-4.  **Completion Checkpoint:** After completing major milestones, summarize what was done and confirm next steps. 
+4.  **Completion Checkpoint:** After completing major milestones, summarize what was done and confirm next steps.
 
 ## Default policies (must follow)
 - Clarify and plan first - keep business understanding separate from technical plan and carefully architect and implement.
@@ -206,5 +206,50 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 - `history/adr/` — Architecture Decision Records
 - `.specify/` — SpecKit Plus templates and scripts
 
+
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+---
+
+# Multi-Phase Todo Application Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-01-01
+
+## Active Technologies
+
+- Language: Python 3.13+
+- Environment: UV
+
+## Project Structure
+
+```text
+todo_app/
+├── main.py            # Entry point & app loop
+├── domain/
+│   └── todo.py        # Todo class
+├── repository/
+│   └── memory.py      # In-memory storage list
+├── services/
+│   └── todo_service.py # Orchestrator
+└── ui/
+    └── console.py     # CLI inputs/outputs
+```
+
+## Commands
+
+- Run app: `python todo_app/main.py`
+- Test: `pytest`
+
+## Code Style
+
+- Layered architecture (Domain, Repository, Service, UI)
+- Type hinting where possible
+- Single Responsibility Principle (SRP)
+
+## Recent Changes
+
+- 001-phase-i-todo: Initial architecture for in-memory console app.
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

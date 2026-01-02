@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(powershell -Command \".specify/scripts/powershell/setup-plan.ps1 -Json ''{\"\"description\"\": \"\"Phase I – In-Memory Python Console Todo App\"\"}''\")",
+      "Bash(mkdir todo_app todo_app/domain todo_app/repository todo_app/services todo_app/ui)"
+    ]
+  }
+}

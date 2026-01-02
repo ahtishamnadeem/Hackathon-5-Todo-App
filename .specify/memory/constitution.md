@@ -1,55 +1,89 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Sync Impact Report
+- Version change: none -> 1.0.0
+- List of modified principles:
+  - Base template placeholders -> Multi-Phase TODO Principles
+- Added sections:
+  - Phase Definitions (I to V)
+  - Key Standards
+  - Constraints & Non-goals
+- Templates requiring updates:
+  - ✅ .specify/templates/plan-template.md (Logic checked)
+  - ✅ .specify/templates/spec-template.md (Logic checked)
+  - ✅ .specify/templates/tasks-template.md (Logic checked)
+- Follow-up TODOs: none
+-->
+
+# Multi-Phase Todo Application Constitution
+
+## Vision
+Build a progressive Todo application that evolves from a simple in-memory Python console app into a production-grade, AI-powered, cloud-native system.
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Simplicity First, Scalability Later
+Start with the simplest viable implementation. Do not introduce abstractions for future phases until those phases are actively being implemented. Clear, readable code is prioritized over premature optimization.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Clear Separation of Concerns
+Maintain strict boundaries between domain logic, interface layers, and storage mechanisms. This ensures that the core logic can remain stable even as the frontend or database technology changes across phases.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Spec-Driven Development (SDD)
+Every phase must be built against verified specifications. No implementation should begin without a clear plan, defined tasks, and acceptance criteria. All changes must be small, testable, and documented in PHRs.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Determinism Before Augmentation
+Core business logic must behave deterministically. AI features introduced in later phases act as an interface layer or an enhancement, never as the primary owner of the application's business rules.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Developer-Friendly and Testable
+The codebase must favor clarity over cleverness. Every component should be easy to run locally, test independently, and understand without deep domain knowledge. Explicit assumptions are always preferred over implicit behavior.
 
-### [PRINCIPLE_6_NAME]
+## Phase Definitions
 
+### Phase I – In-Memory Python Console App
+- **Technology**: Python
+- **Storage**: In-memory (no persistence)
+- **Interface**: Console / CLI
+- **Non-negotiable**: Must remain dependency-free. Establish correct domain logic boundaries.
 
-[PRINCIPLE__DESCRIPTION]
+### Phase II – Full-Stack Web Application
+- **Stack**: Next.js, FastAPI, SQLModel, Neon (PostgreSQL)
+- **Focus**: Transition from memory to persistence. Implement RESTful API and client-server separation.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+### Phase III – AI-Powered Todo Chatbot
+- **Stack**: OpenAI ChatKit, Agents SDK, MCP SDK
+- **Focus**: Natural language interaction. AI handles creation/querying but must respect deterministic core logic.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+### Phase IV – Local Kubernetes Deployment
+- **Stack**: Docker, Minikube, Helm, kubectl-ai
+- **Focus**: Service orchestration and local cloud simulation.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+### Phase V – Advanced Cloud Deployment
+- **Stack**: DigitalOcean DOKS, Kafka, Dapr
+- **Focus**: Event-driven architecture, scalability, and production patterns.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Development Standards & Constraints
+
+### Constraints
+- **Phase Isolation**: Earlier phases must NOT depend on later-phase technologies.
+- **AI restriction**: No AI features or logic before Phase III.
+- **Cloud restriction**: No Kubernetes or cloud abstractions before Phase IV.
+- **Upgrade Path**: Each phase must include a documented strategy for migrating or upgrading to the next phase.
+
+### Non-Goals
+- Premature optimization.
+- Over-engineering early phases.
+- Mixing AI logic into core domain logic.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+### Amendment Procedure
+This constitution is the authoritative source for project rules. Significant changes require:
+1. An update to this document.
+2. A corresponding version bump.
+3. Creation of an ADR to document the rationale if the change is architecturally significant.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+### Versioning Policy
+- **MAJOR**: Backward incompatible governance/principle changes.
+- **MINOR**: New sections or expanded guidance.
+- **PATCH**: Typos or wording clarifications.
+
+**Version**: 1.0.0 | **Ratified**: 2026-01-01 | **Last Amended**: 2026-01-01
