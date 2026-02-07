@@ -3,7 +3,23 @@
     "allow": [
       "Bash(dir:*)",
       "Bash(powershell -Command \".specify/scripts/powershell/setup-plan.ps1 -Json ''{\"\"description\"\": \"\"Phase I – In-Memory Python Console Todo App\"\"}''\")",
-      "Bash(mkdir todo_app todo_app/domain todo_app/repository todo_app/services todo_app/ui)"
+      "Bash(mkdir todo_app todo_app/domain todo_app/repository todo_app/services todo_app/ui)",
+      "Bash(venv/Scripts/alembic revision:*)",
+      "Bash(venv/Scripts/alembic upgrade:*)",
+      "Bash(venv/Scripts/pip install:*)",
+      "Bash(curl:*)",
+      "Bash(timeout 5s python -c \"\nfrom todo_app.main import main\nimport sys\n# Simulate the app running briefly\nimport threading\nimport time\n\ndef run_app\\(\\):\n    main\\(\\)\n\n# Start the app in a thread\nthread = threading.Thread\\(target=run_app, daemon=True\\)\nthread.start\\(\\)\n\n# Let it run briefly then stop\ntime.sleep\\(2\\)\nprint\\(''Phase I app structure is working correctly!''\\)\n\")",
+      "Bash(python -m json.tool)",
+      "Bash(powershell -Command \"Get-Content useTodos.ts | Select-Object -Index 50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80\")",
+      "Bash(powershell -Command \"Get-Content useTodos.ts -TotalCount 80 | Select-Object -Last 15\")",
+      "Bash(powershell -Command \"Get-Content useTodos.ts | Select-Object -Index 80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97\")",
+      "Bash(powershell -Command \"Get-Content useTodos.ts | Select-Object -Index 115,116,117,118,119,120,121,122,123,124,125,126,127,128\")",
+      "Bash(powershell -Command \"Get-Content useTodos.ts | Select-Object -Index 152,153,154,155,156,157,158,159,160,161,162,163,164\")",
+      "Bash(powershell -Command \"Get-Content useTodos.ts | Select-Object -Index 180,181,182,183,184,185,186,187,188,189,190,191,192\")",
+      "Bash(timeout 10s python -c \"\nimport sys\nsys.path.insert\\(0, ''.''\\)\nfrom app.main import app\nprint\\(''✅ Backend application structure is valid''\\)\n\")",
+      "Bash(venvScriptspip install bcrypt)",
+      "Bash(python -c \"from app.database import engine; from sqlmodel import text; result = engine.execute\\(text\\(''SELECT table_name FROM information_schema.tables WHERE table_schema = \\\\''public\\\\''''\\)\\).fetchall\\(\\); print\\([row[0] for row in result]\\)\")",
+      "Bash(python -c \"\nfrom app.database import engine\nfrom sqlmodel import text\nfrom sqlalchemy import create_engine\nfrom sqlalchemy.orm import sessionmaker\n\nSessionLocal = sessionmaker\\(autocommit=False, autoflush=False, bind=engine\\)\ndb = SessionLocal\\(\\)\ntry:\n    result = db.execute\\(text\\(''SELECT table_name FROM information_schema.tables WHERE table_schema = \\\\''public\\\\''''\\)\\)\n    table_names = [row[0] for row in result.fetchall\\(\\)]\n    print\\(''Tables in database:'', table_names\\)\nfinally:\n    db.close\\(\\)\n\")"
     ]
   }
 }

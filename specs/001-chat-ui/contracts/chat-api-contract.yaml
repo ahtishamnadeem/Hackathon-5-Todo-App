@@ -1,0 +1,159 @@
+# API Contract: Chat Endpoint
+
+## Overview
+This document defines the API contract for the chat endpoint that enables users to manage todos through natural language conversation with an AI assistant.
+
+## Endpoint
+
+### POST /api/{user_id}/chat
+
+#### Description
+Process a natural language message from a user and return an AI-generated response with any tool invocations that occurred.
+
+#### Authentication
+- JWT token required in Authorization header
+- user_id in URL must match authenticated user from JWT token
+
+#### Parameters
+**Path Parameters**:
+- `user_id` (integer, required): The ID of the user making the request
+
+**Request Body**:
+```json
+{
+  "conversation_id": {
+    "type": "integer",
+    "required": false,
+    "description": "ID of existing conversation. If omitted, a new conversation will be created."
+  },
+  "message": {
+    "type": "string",
+    "required": true,
+    "description": "The user's message to the AI assistant",
+    "maxLength": 10000
+  }
+}
+```
+
+#### Request Headers
+- `Authorization: Bearer {jwt_token}` (required)
+- `Content-Type: application/json` (required)
+
+#### Response
+
+**Success Response (200 OK)**:
+```json
+{
+  "success": {
+    "type": "boolean",
+    "value": true
+  },
+  "data": {
+    "conversation_id": {
+      "type": "integer",
+      "description": "ID of the conversation (newly created or existing)"
+    },
+    "response": {
+      "type": "string",
+      "description": "AI-generated response to the user's message"
+    },
+    "tool_calls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the MCP tool that was called"
+          },
+          "arguments": {
+            "type": "object",
+            "description": "Arguments passed to the tool"
+          },
+          "result": {
+            "type": "object",
+            "description": "Result returned by the tool"
+          }
+        }
+      },
+      "description": "Array of MCP tools that were invoked during processing"
+    }
+  },
+  "error": {
+    "type": null
+  }
+}
+```
+
+**Error Responses**:
+- `400 Bad Request`: Invalid input parameters
+- `401 Unauthorized`: Missing or invalid JWT token
+- `404 Not Found`: Invalid user_id or conversation_id
+- `500 Internal Server Error`: Unexpected server error
+
+#### Example Requests
+
+**Starting a new conversation**:
+```json
+POST /api/123/chat
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "message": "Add a task to buy groceries"
+}
+```
+
+**Continuing an existing conversation**:
+```json
+POST /api/123/chat
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+Content-Type: application/json
+
+{
+  "conversation_id": 456,
+  "message": "Show me my tasks"
+}
+```
+
+#### Example Response
+```json
+{
+  "success": true,
+  "data": {
+    "conversation_id": 456,
+    "response": "I've added the task 'buy groceries' to your list.",
+    "tool_calls": [
+      {
+        "name": "add_task",
+        "arguments": {
+          "title": "buy groceries"
+        },
+        "result": {
+          "success": true,
+          "task_id": 789
+        }
+      }
+    ]
+  },
+  "error": null
+}
+```
+
+## Security Requirements
+
+### Authentication
+- All requests must include a valid JWT token in the Authorization header
+- The user_id in the URL must match the user_id in the JWT token payload
+- Invalid or missing tokens result in 401 Unauthorized response
+
+### Authorization
+- Users can only access their own conversations
+- All operations must be scoped to the authenticated user's data
+- Use 404 (Not Found) instead of 403 (Forbidden) to prevent data enumeration
+
+## Performance Requirements
+
+- API requests should complete within 5 seconds under normal load
+- Support for concurrent requests from the same user
+- Proper rate limiting to prevent abuse

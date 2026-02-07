@@ -1,4 +1,4 @@
-# Claude Code Rules
+﻿# Claude Code Rules
 
 This file is generated during init for the selected agent.
 
@@ -214,42 +214,100 @@ See `.specify/memory/constitution.md` for code quality, testing, performance, se
 
 # Multi-Phase Todo Application Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-01-01
+Auto-generated from all feature plans. Last updated: 2026-01-08
+
+## Constitution Version
+
+**Current**: 2.0.0 (Last amended: 2026-01-08)
+
+**Major Changes in 2.0.0**:
+- Added Principle VI: Security-First Architecture
+- Added Principle VII: Correctness by Design
+- Added Principle VIII: Production Readiness
+- Expanded Phase II requirements with JWT authentication, user isolation, and REST API standards
 
 ## Active Technologies
+- Python 3.13+ + OpenAI Agents SDK, FastAPI, SQLModel, PostgreSQL, MCP SDK (001-ai-todo-chatbot)
+- PostgreSQL database via SQLModel ORM (001-ai-todo-chatbot)
+- Python 3.13+ + Official MCP SDK, FastAPI, SQLModel, PostgreSQL (001-mcp-task-tools)
 
+### Phase I (Completed)
 - Language: Python 3.13+
 - Environment: UV
+- Storage: In-memory
+
+### Phase II (Current Phase)
+- Frontend: Next.js 16+ (App Router, React Server Components, Server Actions)
+- Backend: Python FastAPI (stateless REST API)
+- ORM: SQLModel (Pydantic + SQLAlchemy)
+- Database: Neon Serverless PostgreSQL
+- Authentication: Better Auth (JWT-based)
 
 ## Project Structure
 
+### Phase I Structure
 ```text
 todo_app/
 ├── main.py            # Entry point & app loop
 ├── domain/
 │   └── todo.py        # Todo class
 ├── repository/
-│   └── memory.py      # In-memory storage list
+│   └── memory.py      # In-memory storage
 ├── services/
 │   └── todo_service.py # Orchestrator
 └── ui/
     └── console.py     # CLI inputs/outputs
 ```
 
+### Phase II Structure (Planned)
+```text
+frontend/              # Next.js 16+ application
+├── app/               # App Router
+├── components/        # React components
+└── lib/               # Utilities
+
+backend/               # FastAPI application
+├── main.py            # FastAPI entry point
+├── models/            # SQLModel entities
+├── routers/           # API route handlers
+├── services/          # Business logic
+├── middleware/        # JWT auth middleware
+└── database.py        # DB connection
+```
+
 ## Commands
 
-- Run app: `python todo_app/main.py`
+### Phase I
+- Run app: `python -m todo_app.main`
 - Test: `pytest`
+
+### Phase II (Planned)
+- Backend: `uvicorn backend.main:app --reload`
+- Frontend: `npm run dev`
+- Database migrations: `alembic upgrade head`
 
 ## Code Style
 
-- Layered architecture (Domain, Repository, Service, UI)
-- Type hinting where possible
+- Layered architecture (Domain, Repository, Service, UI/API)
+- Type hinting required (Pydantic models for validation)
 - Single Responsibility Principle (SRP)
+- Security-first: JWT authentication, user isolation, input validation
+- REST API conventions: proper HTTP methods and status codes
+
+## Security Standards (Phase II)
+
+- All API endpoints (except auth) require valid JWT token
+- User-scoped queries: `WHERE user_id = <authenticated_user_id>`
+- httpOnly cookies for token storage
+- Bcrypt/Argon2 for password hashing
+- SQLModel parameterized queries (no SQL injection)
+- Rate limiting and CORS restrictions
 
 ## Recent Changes
+- 001-mcp-task-tools: Added Python 3.13+ + Official MCP SDK, FastAPI, SQLModel, PostgreSQL
+- 001-ai-todo-chatbot: Added Python 3.13+ + OpenAI Agents SDK, FastAPI, SQLModel, PostgreSQL, MCP SDK
 
-- 001-phase-i-todo: Initial architecture for in-memory console app.
+- 001-phase-i-todo: Initial architecture for in-memory console app (COMPLETED)
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->

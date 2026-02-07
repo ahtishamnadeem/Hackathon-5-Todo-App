@@ -1,0 +1,526 @@
+openapi: 3.0.3
+info:
+  title: Todo Full-Stack Web Application API
+  description: |
+    RESTful API for Phase II Todo application with JWT authentication and user isolation.
+    All endpoints (except auth routes) require valid JWT token in Authorization header.
+  version: 2.0.0
+  contact:
+    name: Hackathon Phase-2 Team
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+  - url: https://api.todo-app.example.com/api
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User registration, login, and logout endpoints
+  - name: Todos
+    description: CRUD operations for todo items (requires authentication)
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token issued by Better Auth. Include in Authorization header as "Bearer <token>".
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: MyPassword123
+          description: Must be at least 8 characters with at least one letter and one number
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          example: MyPassword123
+
+    TokenResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Authenticated successfully
+        error:
+          type: object
+          nullable: true
+          example: null
+
+    TodoCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: Buy groceries
+        description:
+          type: string
+          maxLength: 10000
+          nullable: true
+          example: Milk, eggs, bread
+
+    TodoUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 500
+          nullable: true
+          example: Buy groceries and fruit
+        description:
+          type: string
+          maxLength: 10000
+          nullable: true
+          example: Updated description
+        completed:
+          type: boolean
+          nullable: true
+          example: true
+
+    TodoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        user_id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Buy groceries
+        description:
+          type: string
+          nullable: true
+          example: Milk, eggs, bread
+        completed:
+          type: boolean
+          example: false
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-08T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-01-08T10:00:00Z"
+
+    TodoListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/TodoResponse"
+        error:
+          type: object
+          nullable: true
+          example: null
+
+    TodoSingleResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: "#/components/schemas/TodoResponse"
+        error:
+          type: object
+          nullable: true
+          example: null
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data:
+          type: object
+          nullable: true
+          example: null
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Title is required
+            details:
+              type: object
+              additionalProperties: true
+              example: { "field": "title" }
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user account
+      description: Create a new user with email and password. Password must be at least 8 characters with one letter and one number.
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        "201":
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+          headers:
+            Set-Cookie:
+              description: JWT token stored in httpOnly cookie
+              schema:
+                type: string
+                example: token=eyJhbGc...; HttpOnly; Secure; SameSite=Strict
+        "400":
+          description: Validation error (invalid email, weak password, duplicate email)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login existing user
+      description: Authenticate user with email and password. Returns JWT token in httpOnly cookie.
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenResponse"
+          headers:
+            Set-Cookie:
+              description: JWT token stored in httpOnly cookie
+              schema:
+                type: string
+                example: token=eyJhbGc...; HttpOnly; Secure; SameSite=Strict
+        "400":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Logout current user
+      description: Terminate user session by clearing authentication cookie.
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Logout successful
+          headers:
+            Set-Cookie:
+              description: Clear authentication cookie
+              schema:
+                type: string
+                example: token=; Max-Age=0
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Logged out successfully
+        "401":
+          description: Unauthorized (no valid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /todos:
+    get:
+      tags:
+        - Todos
+      summary: List all user's todos
+      description: Get all todos owned by authenticated user, ordered by creation date (newest first).
+      operationId: listTodos
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Todos retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoListResponse"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    post:
+      tags:
+        - Todos
+      summary: Create new todo
+      description: Create a new todo for authenticated user. user_id is extracted from JWT token.
+      operationId: createTodo
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoCreate"
+      responses:
+        "201":
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoSingleResponse"
+        "400":
+          description: Validation error (empty title, title too long)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /todos/{id}:
+    get:
+      tags:
+        - Todos
+      summary: Get single todo
+      description: Get todo by ID if owned by authenticated user.
+      operationId: getTodo
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      responses:
+        "200":
+          description: Todo retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoSingleResponse"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Todo not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    patch:
+      tags:
+        - Todos
+      summary: Update todo
+      description: Update todo title, description, and/or completion status. Only updates fields provided in request body.
+      operationId: updateTodo
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoUpdate"
+      responses:
+        "200":
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TodoSingleResponse"
+        "400":
+          description: Validation error (empty title, title too long)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Todo not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      tags:
+        - Todos
+      summary: Delete todo
+      description: Permanently delete todo if owned by authenticated user.
+      operationId: deleteTodo
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      responses:
+        "200":
+          description: Todo deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: Todo deleted successfully
+        "401":
+          description: Unauthorized (missing or invalid token)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Todo not found or not owned by user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
