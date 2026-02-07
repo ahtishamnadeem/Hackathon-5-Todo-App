@@ -1,0 +1,338 @@
+# MCP Tool Contracts: Task Management
+
+## Overview
+This document defines the MCP (Model Context Protocol) contracts for the task management tools that will be used by the AI agent.
+
+## Tool Definitions
+
+### add_task
+**Purpose**: Create a new todo task
+
+**Parameters**:
+  - user_id:
+      type: integer
+      required: true
+      description: ID of the user creating the task
+  - title:
+      type: string
+      required: true
+      description: Title of the task
+      maxLength: 500
+  - description:
+      type: string
+      required: false
+      description: Optional description of the task
+      maxLength: 10000
+
+**Response Success**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: true
+    data:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the created task
+        status:
+          type: string
+          enum: ["created"]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the created task
+    error:
+      type: null
+
+**Response Error**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: false
+    data:
+      type: null
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code (e.g., "VALIDATION_ERROR", "DATABASE_ERROR")
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+---
+
+### list_tasks
+**Purpose**: Retrieve tasks for a user
+
+**Parameters**:
+  - user_id:
+      type: integer
+      required: true
+      description: ID of the user whose tasks to retrieve
+  - status:
+      type: string
+      required: false
+      enum: ["all", "pending", "completed"]
+      description: Filter by completion status (defaults to "all")
+
+**Response Success**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: true
+    data:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: Task ID
+          title:
+            type: string
+            description: Task title
+          completed:
+            type: boolean
+            description: Completion status
+    error:
+      type: null
+
+**Response Error**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: false
+    data:
+      type: null
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code (e.g., "VALIDATION_ERROR", "DATABASE_ERROR")
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+---
+
+### complete_task
+**Purpose**: Mark a task as completed
+
+**Parameters**:
+  - user_id:
+      type: integer
+      required: true
+      description: ID of the user
+  - task_id:
+      type: integer
+      required: true
+      description: ID of the task to update
+
+**Response Success**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: true
+    data:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: ID of the updated task
+        status:
+          type: string
+          enum: ["completed"]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the updated task
+    error:
+      type: null
+
+**Response Error**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: false
+    data:
+      type: null
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code (e.g., "VALIDATION_ERROR", "NOT_FOUND", "UNAUTHORIZED", "DATABASE_ERROR")
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+---
+
+### update_task
+**Purpose**: Modify task title or description
+
+**Parameters**:
+  - user_id:
+      type: integer
+      required: true
+      description: ID of the user
+  - task_id:
+      type: integer
+      required: true
+      description: ID of the task to update
+  - title:
+      type: string
+      required: false
+      description: New title for the task
+      maxLength: 500
+  - description:
+      type: string
+      required: false
+      description: New description for the task
+      maxLength: 10000
+
+**Response Success**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: true
+    data:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: ID of the updated task
+        status:
+          type: string
+          enum: ["updated"]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the updated task
+    error:
+      type: null
+
+**Response Error**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: false
+    data:
+      type: null
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code (e.g., "VALIDATION_ERROR", "NOT_FOUND", "UNAUTHORIZED", "DATABASE_ERROR")
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+---
+
+### delete_task
+**Purpose**: Remove a task
+
+**Parameters**:
+  - user_id:
+      type: integer
+      required: true
+      description: ID of the user
+  - task_id:
+      type: integer
+      required: true
+      description: ID of the task to delete
+
+**Response Success**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: true
+    data:
+      type: object
+      properties:
+        task_id:
+          type: integer
+          description: ID of the deleted task
+        status:
+          type: string
+          enum: ["deleted"]
+          description: Status of the operation
+        title:
+          type: string
+          description: Title of the deleted task
+    error:
+      type: null
+
+**Response Error**:
+  type: object
+  properties:
+    success:
+      type: boolean
+      value: false
+    data:
+      type: null
+    error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code (e.g., "VALIDATION_ERROR", "NOT_FOUND", "UNAUTHORIZED", "DATABASE_ERROR")
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+
+## Common Error Codes
+
+- `VALIDATION_ERROR`: Input parameters failed validation
+- `NOT_FOUND`: Requested resource (task/user) does not exist
+- `UNAUTHORIZED`: User does not have permission to access the resource
+- `DATABASE_ERROR`: Database operation failed
+- `INTERNAL_ERROR`: Unexpected server error
+
+## Security Requirements
+
+### Authentication
+- All tools require a valid user_id parameter
+- User identity must be authenticated by the calling backend
+
+### Authorization
+- All operations must verify that the user_id matches the resource owner
+- Cross-user access attempts must return UNAUTHORIZED error
+- Use 404 (Not Found) instead of 403 (Forbidden) to prevent data enumeration
+
+## Performance Requirements
+
+- Tool execution should complete within 2 seconds under normal load
+- Tools must be stateless and not maintain session data
+- Each tool invocation must be independently executable
+- Server restarts must not affect tool correctness
