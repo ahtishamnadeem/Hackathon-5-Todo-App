@@ -1,0 +1,78 @@
+🎉 Todo Chat Bot Application has been deployed to Minikube!
+
+Your release is named {{ .Release.Name }}.
+
+To access your application:
+
+{{- if .Values.backend.enabled }}
+
+📦 BACKEND SERVICE:
+  Service Name: {{ include "todo-chat-bot.fullname" . }}-backend
+  Type: {{ .Values.backend.service.type }}
+  Port: {{ .Values.backend.service.port }}
+  {{- if eq .Values.backend.service.type "NodePort" }}
+  NodePort: {{ .Values.backend.service.nodePort }}
+
+  Access the backend API:
+    minikube service {{ include "todo-chat-bot.fullname" . }}-backend
+
+  Or get the URL:
+    export BACKEND_URL=$(minikube service {{ include "todo-chat-bot.fullname" . }}-backend --url)
+    echo "Backend API: $BACKEND_URL"
+    echo "API Docs: $BACKEND_URL/docs"
+  {{- end }}
+{{- end }}
+
+{{- if .Values.frontend.enabled }}
+
+🌐 FRONTEND SERVICE:
+  Service Name: {{ include "todo-chat-bot.fullname" . }}-frontend
+  Type: {{ .Values.frontend.service.type }}
+  Port: {{ .Values.frontend.service.port }}
+  {{- if eq .Values.frontend.service.type "NodePort" }}
+  NodePort: {{ .Values.frontend.service.nodePort }}
+
+  Access the frontend application:
+    minikube service {{ include "todo-chat-bot.fullname" . }}-frontend
+
+  Or get the URL:
+    export FRONTEND_URL=$(minikube service {{ include "todo-chat-bot.fullname" . }}-frontend --url)
+    echo "Frontend App: $FRONTEND_URL"
+  {{- end }}
+{{- end }}
+
+📋 USEFUL COMMANDS:
+
+  # Check pod status
+  kubectl get pods -l "app.kubernetes.io/instance={{ .Release.Name }}"
+
+  # View backend logs
+  kubectl logs -l "app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend" -f
+
+  # View frontend logs
+  kubectl logs -l "app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend" -f
+
+  # Get all services
+  kubectl get svc -l "app.kubernetes.io/instance={{ .Release.Name }}"
+
+  # Port forward backend (alternative access method)
+  kubectl port-forward svc/{{ include "todo-chat-bot.fullname" . }}-backend 8001:8001
+
+  # Port forward frontend (alternative access method)
+  kubectl port-forward svc/{{ include "todo-chat-bot.fullname" . }}-frontend 3000:3000
+
+🔧 TROUBLESHOOTING:
+
+  If pods are not starting:
+  1. Check if images are available in Minikube:
+     eval $(minikube docker-env)
+     docker images | grep todo
+
+  2. If images are missing, load them:
+     minikube image load todo-backend:latest
+     minikube image load todo-frontend:latest
+
+  3. Check pod events:
+     kubectl describe pod -l "app.kubernetes.io/instance={{ .Release.Name }}"
+
+📚 For more information about the Todo Chat Bot application, check the project documentation.
