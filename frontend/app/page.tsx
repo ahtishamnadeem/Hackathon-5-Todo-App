@@ -30,8 +30,7 @@ export default function HomePage() {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5,
-        ease: 'easeOut'
+        duration: 0.5
       }
     }
   };
@@ -42,8 +41,7 @@ export default function HomePage() {
       opacity: 1,
       y: 0,
       transition: {
-        duration: 0.8,
-        ease: 'easeOut'
+        duration: 0.8
       }
     }
   };

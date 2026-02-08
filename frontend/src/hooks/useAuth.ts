@@ -72,7 +72,7 @@ export function useAuth() {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const response = await authApi.login(email, password);
+      const response: any = await authApi.login(email, password);
       const user = response.data.user;
 
       // Store user data in localStorage
@@ -108,7 +108,7 @@ export function useAuth() {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const response = await authApi.register(email, password);
+      const response: any = await authApi.register(email, password);
       const user = response.data.user;
 
       // Store user data in localStorage
