@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTodos } from '@/hooks/useTodos';
@@ -12,6 +12,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
   const { todos, isLoading, fetchTodos } = useTodos();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Check authentication
   useEffect(() => {
@@ -57,7 +58,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <Link href="/" className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 TodoApp
               </Link>
             </div>
@@ -73,20 +74,80 @@ export default function DashboardPage() {
               </div>
             </nav>
 
-            <div className="flex items-center space-x-4">
+            <div className="hidden md:flex items-center space-x-2 sm:space-x-4">
               <DarkModeToggle />
-              <span className="text-slate-700 dark:text-slate-300 text-sm">
-                Welcome, {user?.email || 'User'}
+              <span className="text-slate-700 dark:text-slate-300 text-xs sm:text-sm truncate max-w-[120px] sm:max-w-none">
+                {user?.email || 'User'}
               </span>
               <Link
                 href="/api/auth/logout"
-                className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-4 py-2 text-sm font-medium"
+                className="text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-2 sm:px-4 py-2 text-xs sm:text-sm font-medium"
               >
                 Logout
               </Link>
             </div>
+
+            {/* Mobile menu button */}
+            <div className="flex md:hidden items-center space-x-2">
+              <DarkModeToggle />
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="text-slate-700 dark:text-slate-300 p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-700"
+                aria-label="Toggle menu"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  {isMobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden border-t border-slate-200 dark:border-slate-700 overflow-hidden"
+            >
+              <div className="px-4 py-3 space-y-2">
+                <Link
+                  href="/dashboard"
+                  className="block bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/todos"
+                  className="block text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 rounded-md text-sm font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Tasks
+                </Link>
+                <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <div className="text-slate-600 dark:text-slate-400 px-3 py-2 text-xs truncate">
+                    {user?.email || 'User'}
+                  </div>
+                  <Link
+                    href="/api/auth/logout"
+                    className="block text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-2 rounded-md text-sm font-medium"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Logout
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       {/* Main Content */}
