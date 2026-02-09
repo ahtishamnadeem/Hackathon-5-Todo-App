@@ -38,6 +38,7 @@ allowed_origins = [
     "http://127.0.0.1:30000",
     "http://127.0.0.1:50129",
     "http://127.0.0.1:64865",
+    "https://hackathon-5-todo-app.vercel.app",  # Production Vercel URL
 ]
 
 app.add_middleware(
