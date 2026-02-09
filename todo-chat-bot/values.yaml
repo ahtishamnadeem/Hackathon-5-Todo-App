@@ -9,7 +9,7 @@ backend:
   image:
     repository: todo-backend
     pullPolicy: Never  # Use local images in Minikube
-    tag: "latest"
+    tag: "v1.0.0"
 
   service:
     type: NodePort  # Use NodePort for local Minikube access
@@ -30,6 +30,16 @@ backend:
       value: "0.0.0.0"
     - name: PORT
       value: "8001"
+    - name: OPENAI_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: todo-api-keys
+          key: OPENAI_API_KEY
+    - name: GOOGLE_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: todo-api-keys
+          key: GOOGLE_API_KEY
 
   resources:
     limits:

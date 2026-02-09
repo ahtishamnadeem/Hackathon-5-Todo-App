@@ -127,7 +127,7 @@ export default function FloatingChatWidget() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center text-white text-2xl z-50 hover:shadow-xl transition-shadow"
+            className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full shadow-lg flex items-center justify-center text-white text-xl sm:text-2xl z-50 hover:shadow-xl transition-shadow"
             aria-label="Open AI Assistant"
           >
             💬
@@ -143,10 +143,10 @@ export default function FloatingChatWidget() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-6 right-6 w-96 h-[600px] bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col z-50 border border-slate-200 dark:border-slate-700"
+            className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 w-full sm:w-96 h-[100vh] sm:h-[600px] sm:max-h-[80vh] bg-white dark:bg-slate-800 sm:rounded-2xl shadow-2xl flex flex-col z-50 border-t sm:border border-slate-200 dark:border-slate-700"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-500 to-purple-600 rounded-t-2xl">
+            <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-500 to-purple-600 sm:rounded-t-2xl">
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
                   <span className="text-lg">🤖</span>

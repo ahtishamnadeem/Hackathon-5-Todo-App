@@ -27,11 +27,24 @@ app = FastAPI(
 )
 
 # Configure CORS middleware (FR-027)
+# Allow all localhost and 127.0.0.1 origins for local development
+allowed_origins = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "http://localhost:8001",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000",
+    "http://127.0.0.1:8001",
+    "http://127.0.0.1:30000",
+    "http://127.0.0.1:50129",
+    "http://127.0.0.1:64865",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL],  # Frontend URL from config
+    allow_origins=allowed_origins,  # Allow specific local origins
     allow_credentials=True,  # Allow cookies (for httpOnly JWT tokens)
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
@@ -98,6 +111,7 @@ def root():
 def on_startup():
     """Application startup event handler."""
     from app.config import settings
+    from app.database import create_db_and_tables
 
     # Validate configuration
     try:
@@ -107,6 +121,14 @@ def on_startup():
         print(f"[ERROR] Configuration error: {str(e)}")
         raise
 
+    # Create database tables
+    try:
+        create_db_and_tables()
+        print("[OK] Database tables created successfully")
+    except Exception as e:
+        print(f"[ERROR] Database initialization error: {str(e)}")
+        raise
+
     print(f"[START] Todo API starting on {settings.HOST}:{settings.PORT}")
     print(f"[DOCS] API docs available at: http://{settings.HOST}:{settings.PORT}/docs")
-    print(f"[CORS] CORS enabled for: {FRONTEND_URL}")
+    print(f"[CORS] CORS enabled for: {', '.join(allowed_origins)}")

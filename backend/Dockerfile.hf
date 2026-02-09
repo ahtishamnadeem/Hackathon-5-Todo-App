@@ -1,4 +1,4 @@
-# Hugging Face Spaces Dockerfile with environment setup
+# Hugging Face Spaces Dockerfile
 FROM python:3.13-slim
 
 WORKDIR /app
@@ -10,14 +10,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements and install
-COPY requirements.txt .
+COPY requirements-hf.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
-
-# Copy env.config to .env (workaround for hidden file upload issues)
-RUN if [ -f env.config ]; then cp env.config .env; fi
 
 # Create data directory for SQLite
 RUN mkdir -p /app/data

@@ -11,13 +11,17 @@ export function useDarkMode() {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Check localStorage and system preference on mount
+    // Check localStorage on mount - default to dark mode
     const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    // Dark mode is default unless explicitly set to 'light'
+    if (savedTheme !== 'light') {
       setIsDarkMode(true);
       document.documentElement.classList.add('dark');
+      // Set default theme in localStorage if not set
+      if (!savedTheme) {
+        localStorage.setItem('theme', 'dark');
+      }
     } else {
       setIsDarkMode(false);
       document.documentElement.classList.remove('dark');

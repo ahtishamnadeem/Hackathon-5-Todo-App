@@ -20,10 +20,9 @@ build/
 
 # Environment variables (CRITICAL - Contains secrets)
 .env
-.env.local
-.env.production
-.env.development
-.env.test
+.env.*
+env.config
+*.env
 
 # Database files (CRITICAL - Contains user data)
 *.db
@@ -72,3 +71,7 @@ test_create_todo.py
 test_update_api.py
 test_update_api_v2.py
 test_api.py
+
+# Docker and Kubernetes secrets
+todo-backend.tar
+todo-frontend.tar
