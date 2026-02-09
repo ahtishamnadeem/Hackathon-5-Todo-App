@@ -52,12 +52,13 @@ def register(
         token = create_access_token(user.id, user.email)
 
         # Set httpOnly cookie (FR-010)
+        # For cross-origin requests (Vercel + HF), use samesite="none" and secure=True
         response.set_cookie(
             key="access_token",
             value=token,
             httponly=True,  # Prevents JavaScript access (XSS protection)
-            secure=False,  # Set to True in production (HTTPS only)
-            samesite="lax",  # CSRF protection
+            secure=True,  # Required for cross-origin cookies
+            samesite="none",  # Allow cross-origin cookies
             max_age=7 * 24 * 60 * 60,  # 7 days in seconds
         )
 
@@ -111,12 +112,13 @@ def login(
         user, token = login_user(request.email, request.password, session)
 
         # Set httpOnly cookie (FR-010)
+        # For cross-origin requests (Vercel + HF), use samesite="none" and secure=True
         response.set_cookie(
             key="access_token",
             value=token,
             httponly=True,  # Prevents JavaScript access (XSS protection)
-            secure=False,  # Set to True in production (HTTPS only)
-            samesite="lax",  # CSRF protection
+            secure=True,  # Required for cross-origin cookies
+            samesite="none",  # Allow cross-origin cookies
             max_age=7 * 24 * 60 * 60,  # 7 days in seconds
         )
 
@@ -157,8 +159,8 @@ def logout(response: Response):
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        secure=False,  # Set to True in production
-        samesite="lax",
+        secure=True,
+        samesite="none",
     )
 
     return {
