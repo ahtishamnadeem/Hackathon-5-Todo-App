@@ -57,7 +57,7 @@ export default function DebugPage() {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
 
-      const response = await fetch(`${apiUrl}/api/todos`, {
+      const response = await fetch(`${apiUrl}/api/todos/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

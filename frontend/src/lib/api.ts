@@ -137,7 +137,7 @@ export const authApi = {
 // Todo API
 export const todoApi = {
   async getAll() {
-    return apiRequest('/api/todos', {
+    return apiRequest('/api/todos/', {
       method: 'GET',
     });
   },
@@ -153,7 +153,7 @@ export const todoApi = {
     description?: string,
     priority?: 'low' | 'medium' | 'high'
   ) {
-    return apiRequest('/api/todos', {
+    return apiRequest('/api/todos/', {
       method: 'POST',
       body: JSON.stringify({
         title,
