@@ -54,6 +54,9 @@ export default function DebugPage() {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
       const response = await fetch(`${apiUrl}/api/todos`, {
         method: 'POST',
         headers: {
@@ -65,7 +68,10 @@ export default function DebugPage() {
           description: 'Debug test',
           priority: 'medium',
         }),
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       setTestResult(JSON.stringify({
@@ -74,7 +80,15 @@ export default function DebugPage() {
         data: data,
       }, null, 2));
     } catch (error) {
-      setTestResult(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          setTestResult(`Error: Request timed out after 30 seconds. The backend might be sleeping or overloaded.`);
+        } else {
+          setTestResult(`Error: ${error.message}\n\nThis usually means:\n- Network connection issue\n- Backend is not responding\n- CORS blocking the request\n- Backend crashed\n\nCheck your Hugging Face Space logs.`);
+        }
+      } else {
+        setTestResult(`Unknown error: ${JSON.stringify(error)}`);
+      }
     }
   };
 
